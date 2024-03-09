@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Fruit REST service</title>
+    <link rel="stylesheet" href="https://unpkg.com/wingcss"/>
+
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+
+        var app = angular.module("FruitManagement", []);
+
+      //Controller Part
+      app.controller("FruitManagementController", function ($scope, $http) {
+
+        _refreshData();
+
+        $scope.fruit = [];
+
+        $scope.form = {
+          name: "",
+          description: ""
+        };
+
+        $scope.count;
+
+        $scope.getStream = function() {
+            var count = $scope.count;
+            var eventSource = new EventSource('/fruits/stream/' + count);
+            var container = document.getElementById('eventContainer');
+            var eventCount = 0;
+
+            eventSource.addEventListener('message', function(event) {
+
+                if (eventCount < count) {
+
+                    var p = document.createElement('p');
+                    p.textContent = event.data;
+                    container.appendChild(p);
+                    eventCount++;
+                } else {
+                    eventSource.close();
+                }
+            });
+        }
+
+        $scope.add = function() {
+            var data = { "name" : $scope.form.name, "description" : $scope.form.description };
+
+            $http({
+                method: "POST",
+                url: '/fruits',
+                data: angular.toJson(data),
+                header: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(_success, _error);
+        };
+
+        function _success(response) {
+            _refreshData();
+            $scope.form.name = '';
+            $scope.form.description = '';
+        }
+
+        function _error(response) {
+            alert('Failed. Are you admin?');
+        }
+
+         function _refreshData() {
+             $http({
+                method: 'GET',
+                url: '/fruits'
+              }).then(function successCallback(response) {
+                $scope.fruits = response.data;
+              }, function errorCallback(response) {
+                console.log(response.statusText);
+              });
+         }
+
+         });
+
+    </script>
+
+</head>
+<body ng-app="FruitManagement" ng-controller="FruitManagementController">
+
+
+<div class="row">
+
+    <div class="col">
+        <div class="card">
+            <h5 class="card-header">Add a fruit using POST API</h5>
+            <div class="card-body">
+
+                <form ng-submit="add()">
+
+                    <div class="form-group ">
+                        <label for="nameFruit">Name: </label>
+                        <div class="form-control">
+                            <input id="nameFruit" type="input" name="name" ng-model="form.name"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descriptionFruit">Description: </label>
+                        <div class="form-control">
+                            <input id="descriptionFruit" type="input" name="description"
+                                   ng-model="form.description"/>
+                        </div>
+                    </div>
+                    <div class="card-footer left">
+                        <input type="submit" class="btn btn-primary" value="Send"/>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="col">
+
+        <div class="card">
+            <h5 class="card-header">Fruit List</h5>
+            <p class="card-body">
+            <ul class="list-group" ng-repeat="fruit in fruits">
+                <li class="list-group-item">{{ fruit.name }} - {{ fruit.description }}</li>
+            </ul>
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+</div>
+
+
+<div class="container">
+
+    <h3>Fruit stream</h3>
+    <form ng-submit="getStream()">
+        <input type="input" ng-model="count"/>
+        <input type="submit" value="Stream!"/>
+    </form>
+
+    <div class="container" id="eventContainer"></div>
+
+</div>
+
+</body>
+</html>
