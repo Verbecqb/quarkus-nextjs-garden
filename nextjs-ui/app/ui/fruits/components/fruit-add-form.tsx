@@ -15,7 +15,8 @@ export default function FruitAddForm() {
 
     const handleChange = (event) => {
          const {name, value} = event.target;
-         setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+         setFormData((prevFormData)
+             => ({ ...prevFormData, [name]: value }));
     }
 
     const handleSubmit = (event) => {
