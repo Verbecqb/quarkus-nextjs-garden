@@ -2,11 +2,13 @@ package org.garden.planner.model.mock;
 
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public interface  ConfigPlants {
+public interface ConfigPlants {
 
     String getName();
 
@@ -14,6 +16,7 @@ public interface  ConfigPlants {
 
     Duration getGrowingDuration();
 
-    Map.Entry<Integer, Integer> getSpace();
+    int[] getSpace();
+
 
 }

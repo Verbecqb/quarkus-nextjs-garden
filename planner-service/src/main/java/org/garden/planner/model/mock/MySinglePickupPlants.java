@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -17,7 +20,7 @@ public enum MySinglePickupPlants implements SinglePickup {
                     new AbstractMap.SimpleEntry<>(Month.MARCH, Month.JULY)
             ),
             Duration.ofDays(90),
-            new AbstractMap.SimpleEntry<>(3, 3)) {
+            new int[] {3,3}) {
 
     },
     SPINACH("Common spinach",
@@ -26,7 +29,7 @@ public enum MySinglePickupPlants implements SinglePickup {
             new AbstractMap.SimpleEntry<>(Month.FEBRUARY, Month.JUNE)
             ),
             Duration.ofDays(60),
-            new AbstractMap.SimpleEntry<>(1, 1)) {
+            new int[] {1, 1}) {
 
     },
     BROCOLI("Common brocoli",
@@ -35,14 +38,15 @@ public enum MySinglePickupPlants implements SinglePickup {
             new AbstractMap.SimpleEntry<>(Month.FEBRUARY, Month.JUNE)
             ),
             Duration.ofDays(60),
-            new AbstractMap.SimpleEntry<>(4, 4)) {
+            new int[] {4, 4}) {
 
     };
 
     private final String name;
     private final List<Map.Entry<Month, Month>> plantingSeasons;
     private final Duration growingDuration;
-    private final Map.Entry<Integer, Integer> space;
+    private final int[] space;
+
 
 
 }
